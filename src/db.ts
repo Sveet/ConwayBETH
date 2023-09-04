@@ -16,27 +16,27 @@ db.exec(`
 
 // CRUD operations for worlds
 export function createWorld(cells: boolean[][], id?: string): string {
-    const worldId = id || randomUUID();
-    const stmt = db.prepare("INSERT INTO worlds (id, cells) VALUES (?, ?)");
-    stmt.run(worldId, JSON.stringify(cells));
-    return worldId;
+  const worldId = id || randomUUID();
+  const stmt = db.prepare("INSERT INTO worlds (id, cells) VALUES (?, ?)");
+  stmt.run(worldId, JSON.stringify(cells));
+  return worldId;
 }
 
 export type WorldInfo = { id: string, cells: boolean[][], created: Date, updated: Date };
 export function readWorld(id: string): WorldInfo | undefined {
-    const stmt = db.prepare("SELECT id, cells, created, updated FROM worlds WHERE id = ?");
-    const result: any = stmt.get(id);
-    return result ? {
-        id: result.id,
-        cells: JSON.parse(result.cells),
-        created: new Date(result.created),
-        updated: new Date(result.updated)
-    } : undefined;
+  const stmt = db.prepare("SELECT id, cells, created, updated FROM worlds WHERE id = ?");
+  const result: any = stmt.get(id);
+  return result ? {
+    id: result.id,
+    cells: JSON.parse(result.cells),
+    created: new Date(result.created),
+    updated: new Date(result.updated)
+  } : undefined;
 }
 
 export function updateWorld(id: string, cells: boolean[][]): void {
-    const stmt = db.prepare("UPDATE worlds SET cells = ?, updated = CURRENT_TIMESTAMP WHERE id = ?");
-    stmt.run(JSON.stringify(cells), id);
+  const stmt = db.prepare("UPDATE worlds SET cells = ?, updated = CURRENT_TIMESTAMP WHERE id = ?");
+  stmt.run(JSON.stringify(cells), id);
 }
 
 export function upsertWorld(worldId: string, cells: boolean[][]): string {
@@ -50,6 +50,6 @@ export function upsertWorld(worldId: string, cells: boolean[][]): string {
 
 
 export function deleteWorld(id: string): void {
-    const stmt = db.prepare("DELETE FROM worlds WHERE id = ?");
-    stmt.run(id);
+  const stmt = db.prepare("DELETE FROM worlds WHERE id = ?");
+  stmt.run(id);
 }

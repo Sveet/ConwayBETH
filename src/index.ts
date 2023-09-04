@@ -6,7 +6,7 @@ import { World, getWorld, iterateWorld, renderCell, renderWorld, setWorld } from
 const app = new Elysia()
   .use(html())
   .get("/", ({ set }) => set.redirect = `/${randomUUID()}`)
-  .get("/:id", ({html, params: { id }}) => {
+  .get("/:id", ({ html, params: { id } }) => {
     let world: World = getWorld(id);
     return html(`
 <!DOCTYPE html>
@@ -41,32 +41,33 @@ const app = new Elysia()
   </div>
 </body>
 </html>
-    `
-    )
+    `)
   })
-  .post("/:id/toggle", ({body: {alive, row, col}, params: {id}}) => {
+  .post("/:id/toggle", ({ body: { alive, row, col }, params: { id } }) => {
     const world = getWorld(id);
     world[row][col] = !alive;
     setWorld(id, world);
     return renderCell(id, !alive, row, col);
-  }, {body: t.Object({
-    alive: t.Boolean(),
-    row: t.Integer(),
-    col: t.Integer(),
-  }), transform: ({body})=>{
-    body.alive = (body as any).alive == 'true';
-    body.row = +(body as any).row;
-    body.col = +(body as any).col;
-  }})
-  .post("/:id/stop", ({params: {id}}) => {
+  }, {
+    body: t.Object({
+      alive: t.Boolean(),
+      row: t.Integer(),
+      col: t.Integer(),
+    }), transform: ({ body }) => {
+      body.alive = (body as any).alive == 'true';
+      body.row = +(body as any).row;
+      body.col = +(body as any).col;
+    }
+  })
+  .post("/:id/stop", ({ params: { id } }) => {
     const world = getWorld(id);
     return renderWorld(id, world);
   })
-  .post("/:id/next", ({body, params: {id}}) => {
+  .post("/:id/next", ({ body, params: { id } }) => {
     const world = getWorld(id);
     const next = iterateWorld(world);
     setWorld(id, next);
     return renderWorld(id, next, body?.rate_ms);
-  }, {body: t.Optional(t.Object({rate_ms: t.Optional(t.Integer())})),transform: ({body})=> body.rate_ms = Number.parseInt((body as any).rate_ms) || undefined})
+  }, { body: t.Optional(t.Object({ rate_ms: t.Optional(t.Integer()) })), transform: ({ body }) => body.rate_ms = Number.parseInt((body as any).rate_ms) || undefined })
   .listen(3000);
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
