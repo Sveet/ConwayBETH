@@ -26,7 +26,7 @@ This project is built using the [BETH stack](https://github.com/fvucemilo/beth-s
 
 - **Bun**: A drop-in NodeJS replacement with first class support for TypeScript. Features: designed for speed and comes with a bundler, test runner, and Node.js-compatible package manager.
 - **Elysia**: A fast and friendly bun web framework with end-to-end type safety and great developer experience. Elysia provides first-class TypeScript support with well-thought integration between services, whether it's tRPC, Swagger, or WebSocket. [Learn more about Elysia](https://elysiajs.com/).
-- **SQLite**: A C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine.
+- **SQLite**: A C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine. The "T" in BETH is for [Turso](https://turso.tech/), which provides SQLite databases on the edge and has a generous free tier. 
 - **HTMX**: A tool that allows you to access AJAX, CSS Transitions, WebSockets, and Server Sent Events directly in HTML, boosting the interactivity of the application without requiring you to write any JavaScript.
 
 Together, these technologies provide a robust foundation for building and scaling the Game of Life simulation.
