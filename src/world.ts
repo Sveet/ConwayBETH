@@ -1,9 +1,14 @@
+import { readWorld, upsertWorld } from "./db";
 
 export type World = boolean[][];
-const worlds = new Map<string, World>();
 
-export const getWorld = (id: string) => worlds.get(id) ?? defaultWorld();
-export const setWorld = (id: string, world: World) => worlds.set(id, world);
+export const getWorld = (id: string) =>{
+  const world = readWorld(id) ?? {cells: defaultWorld()};
+  return world.cells;
+}
+export const setWorld = (id: string, world: World) => {
+  return upsertWorld(id, world);
+}
 
 export const renderCell = (worldId: string, alive: boolean, row: number, col: number) => `
   <div hx-post="/${worldId}/toggle" hx-vals='{"row": ${row}, "col": ${col}, "alive": ${alive}}' hx-swap="outerHTML" class="bg-${alive ? 'black' : 'white'} m-0" style="grid-row: ${row+1}; grid-column: ${col+1};"></div>
