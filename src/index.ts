@@ -1,27 +1,13 @@
 import { Elysia, t } from "elysia";
 import { html } from '@elysiajs/html'
 import { randomUUID } from "crypto";
-
-type World = boolean[][];
-const worlds = new Map<string, World>();
-
-const renderCell = (worldId: string, alive: boolean, row: number, col: number) => `
-  <div hx-post="/${worldId}/toggle" hx-vals='{"row": ${row}, "col": ${col}, "alive": ${alive}}' hx-swap="outerHTML" class="bg-${alive ? 'black' : 'white'} m-0 border" style="grid-row: ${row+1}; grid-column: ${col+1};"></div>
-`
-const renderWorld = (worldId: string, world: World) => {
-  return`<div class="aspect-square mx-auto w-full grid grid-gap-0">
-  ${world.map((g, row) =>
-    g.map((alive, col) => renderCell(worldId, alive, row, col)).join('')
-  ).join('')}
-</div>`
-}
-const emptyWorld = (cols: number, rows: number): boolean[][]=>Array.from({length: rows}, () => Array(cols).fill(false))
+import { World, getWorld, iterateWorld, renderCell, renderWorld, setWorld } from "./world";
 
 const app = new Elysia()
   .use(html())
   .get("/", ({ set }) => set.redirect = `/${randomUUID()}`)
   .get("/:id", ({html, params: { id }}) => {
-    let world: World = worlds.get(id) ?? emptyWorld(40, 40);
+    let world: World = getWorld(id);
     return html(`
 <!DOCTYPE html>
 <html lang="en">
@@ -34,9 +20,20 @@ const app = new Elysia()
 </head>
 <body>
   <div class="container w-full mx-auto">
-    <button class="" hx-post="/clicked" hx-swap="outerHTML">
-      Click Me
-    </button>
+    <div>
+      <button class="border-slate-600 border rounded" hx-post="/${id}/next" hx-target="#world" hx-swap="outerHTML">
+        Iterate
+      </button>
+      <button class="border-slate-600 border rounded" hx-post="/${id}/next" hx-target="#world" hx-swap="outerHTML">
+        Start World
+      </button>
+      <div>
+        <label for="rate" class="block text-sm font-medium leading-6 text-gray-900">Iteration Rate (ms)</label>
+        <div class="mt-2">
+          <input id="rate" name="rate" type="text" value="250" class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        </div>
+      </div>
+    </div>
     ${renderWorld(id, world)}
   </div>
 </body>
@@ -45,9 +42,9 @@ const app = new Elysia()
     )
   })
   .post("/:id/toggle", ({body: {alive, row, col}, params: {id}}) => {
-    const world = worlds.get(id) ?? emptyWorld(40, 40);
+    const world = getWorld(id);
     world[row][col] = !alive;
-    worlds.set(id, world);
+    setWorld(id, world);
     return renderCell(id, !alive, row, col);
   }, {body: t.Object({
     alive: t.Boolean(),
@@ -58,6 +55,11 @@ const app = new Elysia()
     body.row = +(body as any).row;
     body.col = +(body as any).col;
   }})
-  .post("/clicked", () => `<div>I'm from the server!</div>`)
+  .post("/:id/next", ({params: {id}}) => {
+    const world = getWorld(id);
+    const next = iterateWorld(world);
+    setWorld(id, next);
+    return renderWorld(id, next);
+  })
   .listen(3000);
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
