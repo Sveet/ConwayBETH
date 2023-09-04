@@ -1,21 +1,27 @@
 import { Elysia, t } from "elysia";
 import { html } from '@elysiajs/html'
+import { randomUUID } from "crypto";
 
-const renderCell = (alive: boolean, row: number, col: number) => `
-  <div hx-post="/toggle" hx-vals='{"row": ${row}, "col": ${col}, "alive": ${alive}}' hx-swap="outerHTML" data-alive="${alive}" data-row="${row}" data-col="${col}" class="bg-${alive ? 'black' : 'white'} m-0 border" style="grid-row: ${row+1}; grid-column: ${col+1};"></div>
+type World = boolean[][];
+const worlds = new Map<string, World>();
+
+const renderCell = (worldId: string, alive: boolean, row: number, col: number) => `
+  <div hx-post="/${worldId}/toggle" hx-vals='{"row": ${row}, "col": ${col}, "alive": ${alive}}' hx-swap="outerHTML" class="bg-${alive ? 'black' : 'white'} m-0 border" style="grid-row: ${row+1}; grid-column: ${col+1};"></div>
 `
-const renderGrid = (grid: boolean[][]) => {
+const renderWorld = (worldId: string, world: World) => {
   return`<div class="aspect-square mx-auto w-full grid grid-gap-0">
-  ${grid.map((g, row) =>
-    g.map((alive, col) => renderCell(alive, row, col)).join('')
+  ${world.map((g, row) =>
+    g.map((alive, col) => renderCell(worldId, alive, row, col)).join('')
   ).join('')}
 </div>`
 }
-const createGrid = (cols: number, rows: number): boolean[][]=>Array.from({length: rows}, () => Array(cols).fill(false))
+const emptyWorld = (cols: number, rows: number): boolean[][]=>Array.from({length: rows}, () => Array(cols).fill(false))
 
 const app = new Elysia()
   .use(html())
-  .get("/", ({html}) => {
+  .get("/", ({ set }) => set.redirect = `/${randomUUID()}`)
+  .get("/:id", ({html, params: { id }}) => {
+    let world: World = worlds.get(id) ?? emptyWorld(40, 40);
     return html(`
 <!DOCTYPE html>
 <html lang="en">
@@ -31,14 +37,19 @@ const app = new Elysia()
     <button class="" hx-post="/clicked" hx-swap="outerHTML">
       Click Me
     </button>
-    ${renderGrid(createGrid(20, 20))}
+    ${renderWorld(id, world)}
   </div>
 </body>
 </html>
     `
     )
   })
-  .post("/toggle", ({body}) => renderCell(!body.alive, body.row, body.col), {body: t.Object({
+  .post("/:id/toggle", ({body: {alive, row, col}, params: {id}}) => {
+    const world = worlds.get(id) ?? emptyWorld(40, 40);
+    world[row][col] = !alive;
+    worlds.set(id, world);
+    return renderCell(id, !alive, row, col);
+  }, {body: t.Object({
     alive: t.Boolean(),
     row: t.Integer(),
     col: t.Integer(),
