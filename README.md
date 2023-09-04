@@ -48,19 +48,19 @@ See the bun docs for other methods of installation: [link](https://bun.sh/docs/i
   ```bash
   git clone https://github.com/Sveet/ConwayBETH.git
   ```
-1. Navigate to the project directory:
+2. Navigate to the project directory:
   ```bash
   cd ConwayBETH
   ```
-1. Install the required dependencies:
+3. Install the required dependencies:
   ```bash
   bun install
   ```
-1. Run the server:
+4. Run the server:
   ```bash
   bun start
   ```
-1. Open your browser and navigate to http://localhost:3000 to begin playing the game
+5. Open your browser and navigate to http://localhost:3000 to begin playing the game
 
 ## Usage
 * Click on cells to toggle their state between alive (filled) and dead (empty).
