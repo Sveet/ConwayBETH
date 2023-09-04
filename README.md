@@ -45,8 +45,8 @@ See the bun docs for other methods of installation: [link](https://bun.sh/docs/i
 ## Setup and Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo-link/conways-game-of-life-ts.git
+  ```bash
+  git clone https://github.com/Sveet/ConwayBETH.git
   ```
 1. Navigate to the project directory:
   ```bash
