@@ -2,6 +2,9 @@ import { Elysia } from "elysia";
 import { html } from '@elysiajs/html'
 import * as elements from 'typed-html'
 
+const Cell = (alive: boolean) => {
+  return alive ? <div class="bg-black mx-0 my-0 border"></div> : <div class="bg-white mx-0 my-0 border"></div>
+}
 const BaseHtml = ({ children }: elements.Children) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -17,28 +20,24 @@ ${children}
 </body>
 </html>
 `
-const grid = Array(12).map(g => new Array(12));
+const grid: boolean[][] = Array.from({length: 12}, () => Array(12).fill(false));
+const cells = grid.map(r => r.map(c => Cell(c)).join('')).join('')
 const app = new Elysia()
   .use(html())
-  .get("/", ({html}) =>
-  html(
-    <BaseHtml>
-      <button hx-post="/clicked" hx-swap="outerHTML">
-        Click Me
-      </button>
-      ${renderGrid(grid)}
-    </BaseHtml>
-  )
-  )
+  .get("/", ({html}) => {
+    return html(
+      <BaseHtml>
+        <div class="container">
+          <button class="" hx-post="/clicked" hx-swap="outerHTML">
+            Click Me
+          </button>
+          <div class="grid grid-cols-12 aspect-square mx-auto">
+            {cells}
+          </div>
+        </div>
+      </BaseHtml>
+    )
+  })
   .post("/clicked", () => <div>I'm from the server!</div>)
   .listen(3000);
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
-
-const Cell = (alive: boolean) => alive ? <div class="bg-black">x</div> : <div class="bg-white">x</div>
-
-const renderGrid = (grid: boolean[][]) => {
-  const cells = grid.map(r => r.map(c => Cell(c)))
-  return <div class="grid grid-cols-12 aspect-square mx-auto">
-    ${cells}
-  </div>
-}

@@ -7,11 +7,11 @@
   },
   "dependencies": {
     "@elysiajs/html": "^0.6.0",
+    "typed-html": "^3.0.1",
     "elysia": "latest"
   },
   "devDependencies": {
-    "bun-types": "latest",
-    "typed-html": "^3.0.1"
+    "bun-types": "latest"
   },
   "module": "src/index.js"
 }
