@@ -1,12 +1,13 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { html } from '@elysiajs/html'
 
+const renderCell = (alive: boolean, row: number, col: number) => `
+  <div hx-post="/toggle" hx-vals='{"row": ${row}, "col": ${col}, "alive": ${alive}}' hx-swap="outerHTML" data-alive="${alive}" data-row="${row}" data-col="${col}" class="bg-${alive ? 'black' : 'white'} m-0 border" style="grid-row: ${row+1}; grid-column: ${col+1};"></div>
+`
 const renderGrid = (grid: boolean[][]) => {
   return`<div class="aspect-square mx-auto w-full grid grid-gap-0">
   ${grid.map((g, row) =>
-    g.map((alive, col) => `
-      <div data-row="${row}" data-col="${col}" class="bg-${alive ? 'black' : 'white'} m-0 border" style="grid-row: ${row+1}; grid-column: ${col+1};"></div>
-    `).join('')
+    g.map((alive, col) => renderCell(alive, row, col)).join('')
   ).join('')}
 </div>`
 }
@@ -37,6 +38,15 @@ const app = new Elysia()
     `
     )
   })
+  .post("/toggle", ({body}) => renderCell(!body.alive, body.row, body.col), {body: t.Object({
+    alive: t.Boolean(),
+    row: t.Integer(),
+    col: t.Integer(),
+  }), transform: ({body})=>{
+    body.alive = (body as any).alive == 'true';
+    body.row = +(body as any).row;
+    body.col = +(body as any).col;
+  }})
   .post("/clicked", () => `<div>I'm from the server!</div>`)
   .listen(3000);
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
