@@ -2,15 +2,15 @@ import { Elysia } from "elysia";
 import { html } from '@elysiajs/html'
 
 const renderGrid = (grid: boolean[][]) => {
-  return`<table class="aspect-square mx-auto w-full">
-  ${grid.map((g, row) => `<tr class="m-0 p-0">
-    ${g.map((alive, col) => `<td class="border m-0 p-0">
-      <div data-row="${row}" data-col="${col}" class="bg-${alive ? 'black' : 'white'} m-0 border w-full h-full object-cover"></div>
-    </td>`).join('')}
-  </tr>`).join('')}
-</table>`
+  return`<div class="aspect-square mx-auto w-full grid grid-gap-0">
+  ${grid.map((g, row) =>
+    g.map((alive, col) => `
+      <div data-row="${row}" data-col="${col}" class="bg-${alive ? 'black' : 'white'} m-0 border" style="grid-row: ${row+1}; grid-column: ${col+1};"></div>
+    `).join('')
+  ).join('')}
+</div>`
 }
-const createGrid = (cols: number, rows: number): boolean[][]=>Array.from({length: rows}, () => Array(cols).fill(true))
+const createGrid = (cols: number, rows: number): boolean[][]=>Array.from({length: rows}, () => Array(cols).fill(false))
 
 const app = new Elysia()
   .use(html())
