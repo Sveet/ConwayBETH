@@ -1,3 +1,4 @@
+![Conway's Game of Life](game.png "Conway's Game of Life")
 # Conway's Game of Life on BETH Stack
 
 Welcome to a TypeScript implementation of Conway's Game of Life! This project is a modern take on the classic cellular automaton devised by the British mathematician John Conway. Dive in to explore the fascinating patterns and behaviors of cells in this simulation.
