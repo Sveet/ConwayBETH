@@ -1,12 +1,16 @@
 import { Elysia } from "elysia";
 import { html } from '@elysiajs/html'
 
-const Cell = (alive: boolean) => {
-  return alive ? `<div class="bg-black mx-0 my-0 border"></div>` : `<div class="bg-white mx-0 my-0 border"></div>`
+const cell = (alive: boolean) => {
+  return `<div class="bg-${alive ? 'black' : 'white'} mx-0 my-0 border"></div>`
 }
+const renderGrid = (grid: boolean[][]) => {
+  return`<table class="aspect-square mx-auto table-fixed w-full">
+  ${grid.map(r => `<tr>${r.map(c => `<td class="border">${cell(c)}</td>`).join('')}</tr>`).join('')}
+</table>`
+}
+const createGrid = (cols: number, rows: number): boolean[][]=>Array.from({length: rows}, () => Array(cols).fill(false))
 
-const grid: boolean[][] = Array.from({length: 12}, () => Array(12).fill(false));
-const cells = grid.map(r => r.map(c => Cell(c)).join('')).join('')
 const app = new Elysia()
   .use(html())
   .get("/", ({html}) => {
@@ -21,13 +25,11 @@ const app = new Elysia()
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-  <div class="container">
+  <div class="container w-full mx-auto">
     <button class="" hx-post="/clicked" hx-swap="outerHTML">
       Click Me
     </button>
-    <div class="grid grid-cols-12 aspect-square mx-auto">
-      ${cells}
-    </div>
+    ${renderGrid(createGrid(20, 20))}
   </div>
 </body>
 </html>
