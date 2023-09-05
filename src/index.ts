@@ -21,6 +21,9 @@ const app = new Elysia()
 <body>
   <div class="container w-full mx-auto">
     <div>
+      <button class="border-slate-600 border rounded" onClick="window.location='/'">
+        New World
+      </button>
       <button class="border-slate-600 border rounded" hx-post="/${id}/next" hx-target="#world" hx-swap="outerHTML">
         Iterate
       </button>
@@ -68,6 +71,6 @@ const app = new Elysia()
     const next = iterateWorld(world);
     setWorld(id, next);
     return renderWorld(id, next, body?.rate_ms);
-  }, { body: t.Optional(t.Object({ rate_ms: t.Optional(t.Integer()) })), transform: ({ body }) => body.rate_ms = Number.parseInt((body as any).rate_ms) || undefined })
+  }, { body: t.Optional(t.Object({ rate_ms: t.Optional(t.Integer()) })), transform: ({ body }) => body.rate_ms = body.rate_ms == undefined ? undefined : +body.rate_ms })
   .listen(3000);
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);

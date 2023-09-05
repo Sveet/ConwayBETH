@@ -14,7 +14,7 @@ export const renderCell = (worldId: string, alive: boolean, row: number, col: nu
   <div hx-post="/${worldId}/toggle" hx-vals='{"row": ${row}, "col": ${col}, "alive": ${alive}}' hx-swap="outerHTML" class="bg-${alive ? 'black' : 'white'} m-0" style="grid-row: ${row + 1}; grid-column: ${col + 1};"></div>
 `
 export const renderWorld = (worldId: string, world: World, rate?: number) => {
-  const extras = rate ? `hx-trigger="load delay:${rate}ms" hx-vals='js:{rate_ms: document.getElementById("rate").value}' hx-post="/${worldId}/next" hx-target="#world"` : ''
+  const extras = rate != undefined ? `hx-trigger="load${rate > 0 ? ` delay:${rate}ms` : ''}" hx-vals='js:{rate_ms: document.getElementById("rate").value}' hx-post="/${worldId}/next" hx-target="#world"` : ''
   return `<div id="world" class="aspect-square mx-auto w-full grid grid-gap-0 border" ${extras}>
   ${world.map((w, row) =>
     w.map((alive, col) => renderCell(worldId, alive, row, col)).join('')
